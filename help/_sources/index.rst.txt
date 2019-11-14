@@ -1,0 +1,26 @@
+Plot Discrete Cumulative Distribution Functions
+================================================
+
+This python package allows us to plot beautiful cumulative distributions functions and quantile functions
+for discrete random variables.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   usage/README
+   usage/examples
+
+
+PlotCDF Discrete Modules
+===========================
+.. automodule:: discrete.plot
+   :members:
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

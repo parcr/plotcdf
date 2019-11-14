@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Examples &#8212; PlotCDF 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="License" href="license.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="license.html" title="License"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PlotCDF 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>Here we present a set of very simple examples just for you to get a feeling about the package.</p>
+<div class="section" id="hello-world">
+<h2>Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
+<p>Consider the mighty Bernoulli;  <span class="math notranslate nohighlight">\(X\sim B(p)\)</span>, that is <span class="math notranslate nohighlight">\(X\in \{0, 1\}\)</span> with <span class="math notranslate nohighlight">\(P(X=x)=p^x(1-p)^{1-x}\)</span>,
+with <span class="math notranslate nohighlight">\(p \in ]0,1[\)</span>.</p>
+<p>In this example, we’ll be plotting <span class="math notranslate nohighlight">\(X\sim B(0.5)\)</span>, of course. It’s really simple:</p>
+<ol class="arabic simple">
+<li><p>Create your discrete random variable:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bernoulli</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">RV</span><span class="p">(</span><span class="n">support</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">prob</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The result would be the same if instead of the <strong>probability mass function</strong> (pmf) you passed the
+<strong>cumulative distribution function</strong> (cdf).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bernoulli</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">RV</span><span class="p">(</span><span class="n">support</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">prob</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="n">is_pmf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Plot it, <em>‘et voilá’</em>, we’ve our graphic for the Bernoulli’s cumulative distribution function.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bernoulli</span><span class="o">.</span><span class="n">plot_cdf</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/bernoulli_cdf_X.png"><img alt="cumulative distribution function for the B(0.5)" src="../_images/bernoulli_cdf_X.png" style="width: 400px;" /></a>
+<p>We can also plot the probability mass function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bernoulli</span><span class="o">.</span><span class="n">plot_pmf</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/bernoulli_pmf_X.png"><img alt="probability mass function for the B(0.5)" src="../_images/bernoulli_pmf_X.png" style="width: 400px;" /></a>
+<p>or the percentile (quantile) function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bernoulli</span><span class="o">.</span><span class="n">plot_quantile</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/bernoulli_quantile_X.png"><img alt="percentile function for the B(0.5)" src="../_images/bernoulli_quantile_X.png" style="width: 400px;" /></a>
+<p>and you’re ready to go.</p>
+</div>
+<div class="section" id="the-binomial">
+<h2>The Binomial<a class="headerlink" href="#the-binomial" title="Permalink to this headline">¶</a></h2>
+<p>A simple extension of the <a class="reference internal" href="#hello-world"><span class="std std-ref">Hello World</span></a>. Consider now a Binomial;  <span class="math notranslate nohighlight">\(X\sim B(n, p)\)</span>, that is <span class="math notranslate nohighlight">\(X\in \{0,..., n\}\)</span>
+with <span class="math notranslate nohighlight">\(P(X=x)=C^n_x p^x(1-p)^{1-x}\)</span>, with <span class="math notranslate nohighlight">\(n \in \mathbb{N}\)</span>  and <span class="math notranslate nohighlight">\(p \in ]0,1[\)</span>.</p>
+<p>In this example, we’ll be plotting <span class="math notranslate nohighlight">\(X\sim B(5, 0.5)\)</span>.</p>
+<p>In this case we’ve as support and pmf, respectively</p>
+<p>support=[0, 1, 2, 3, 4, 5]</p>
+<p>prob=[0.0503284375, 0.2058890625, 0.336909375, 0.275653125, 0.1127671875, 0.0184528125].</p>
+<ol class="arabic simple">
+<li><p>Create your discrete random variable:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binomial</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">RV</span><span class="p">(</span><span class="n">support</span><span class="p">,</span> <span class="n">prob</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result would be the same if instead of the <strong>probability mass function</strong> (pmf) you passed the
+<strong>cumulative distribution function</strong> (cdf).</p>
+<p>prob=[0.0503284375, 0.2562175, 0.593126875, 0.86878, 0.9815471875, 1.0].</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binomial</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">RV</span><span class="p">(</span><span class="n">support</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">is_pmf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Plot the cumulative distribution function.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binomial</span><span class="o">.</span><span class="n">plot_cdf</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/binomial_cdf_X.png"><img alt="cumulative distribution function for the B(n,p)" src="../_images/binomial_cdf_X.png" style="width: 400px;" /></a>
+<p>Plot the probability mass function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binomial</span><span class="o">.</span><span class="n">plot_pmf</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/binomial_pmf_X.png"><img alt="probability mass function for the B(n,p)" src="../_images/binomial_pmf_X.png" style="width: 400px;" /></a>
+<p>or the percentile (quantile) function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">binomial</span><span class="o">.</span><span class="n">plot_quantile</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/binomial_quantile_X.png"><img alt="percentile function for the B(n,p)" src="../_images/binomial_quantile_X.png" style="width: 400px;" /></a>
+</div>
+<div class="section" id="incomplete-tails">
+<h2>Incomplete Tails<a class="headerlink" href="#incomplete-tails" title="Permalink to this headline">¶</a></h2>
+<p>We will use the Poisson to explain the case for an incomplete support of the random variable.
+Consider now a Poisson;  <span class="math notranslate nohighlight">\(X\sim P(\lambda)\)</span>, that is <span class="math notranslate nohighlight">\(X \in \mathbb{N}_0\)</span>
+with <span class="math notranslate nohighlight">\(P(X=x)=e^{-\lambda}\frac{\lambda^x}{x!}\)</span>, with <span class="math notranslate nohighlight">\(n \in \mathbb{N}\)</span>
+and <span class="math notranslate nohighlight">\(\lambda \in \mathbb{R}^+\)</span>.</p>
+<p>In this case since the support is countable but not finite, we should consider that in our plot.</p>
+<div class="section" id="incomplete-right-tail">
+<h3>Incomplete Right Tail<a class="headerlink" href="#incomplete-right-tail" title="Permalink to this headline">¶</a></h3>
+<p>In the example we’ll be using the <span class="math notranslate nohighlight">\(X\sim P(5)\)</span>.</p>
+<p>So, if we consider to plot the subset of the support [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], we are truncating
+the right tail. When we initialize our Poisson using the supported truncated to the right, we’ll get a warning
+based on the max_tol set with default 1e-12. Hence in this case, we are using</p>
+<p>support=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</p>
+<p>prob=[0.006737947, 0.033689735, 0.0842243375, 0.1403738958, 0.1754673698, 0.1754673698, 0.1462228081, 0.104444863,
+0.0652780393, 0.0362655774].</p>
+<p>We should initialize our random variable stating that the right tail is incomplete, so that, the plot signs
+this situation, in accordance with the <span class="raw-html"><font color="red">WARNING:root:The error of the sum of the probabilities
+exceeds the maximum tolerance allowed for the error. So, you should consider to mark at least one of the tails
+as incomplete. The error is 0.031828057306205304 with a tolerance of 1e-12.</font></span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poisson</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">RV</span><span class="p">(</span><span class="n">support</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">complete_right</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The error is due to the difference <span class="math notranslate nohighlight">\(1-P(X\leq 9)=3.18281\%.\)</span></p>
+<p>Plot the cumulative distribution function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poisson</span><span class="o">.</span><span class="n">plot_cdf</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/_cdf_poisson_rt.png"><img alt="cumulative distribution function for the Poisson" src="../_images/_cdf_poisson_rt.png" style="width: 400px;" /></a>
+<p>the plot, by default, marks the truncated right tail with a red dashed line.</p>
+<p>Plot the probability mass function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poisson</span><span class="o">.</span><span class="n">plot_pmf</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/_pmf_poisson_rt.png"><img alt="probability mass function for the Poisson" src="../_images/_pmf_poisson_rt.png" style="width: 400px;" /></a>
+<p>the plot, by default, marks the truncated right tail with a red dashed line.</p>
+<p>Plot the percentile (quantile) function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poisson</span><span class="o">.</span><span class="n">plot_quantile</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/_quantile_poisson_rt.png"><img alt="percentile function for the Poisson" src="../_images/_quantile_poisson_rt.png" style="width: 400px;" /></a>
+<p>the plot, by default, marks the truncated right tail with a red dashed line.</p>
+</div>
+<div class="section" id="incomplete-left-and-right-tail">
+<h3>Incomplete Left and Right Tail<a class="headerlink" href="#incomplete-left-and-right-tail" title="Permalink to this headline">¶</a></h3>
+<p>In the example we’ll be using the <span class="math notranslate nohighlight">\(X\sim P(5)\)</span>.</p>
+<p>So, if we consider to plot the subset of the support [4, 5, 6, 7, 8, 9, 10, 11, 12], we are truncating
+both the left and right tails. When we initialize our Poisson using the supported truncated to the left and right,
+we’ll get a warning based on the max_tol set with default 1e-12. Hence in this case, we are using</p>
+<p>support=[4, 5, 6, 7, 8, 9]</p>
+<p>prob=[0.4404932851, 0.6159606548, 0.762183463, 0.8666283259, 0.9319063653, 0.9681719427].</p>
+<p>So, we should initialize our random variable stating that the left and right tail are incomplete and we are
+using the cumulative probabilities. We’ll get a warning due to the truncation above the maximum tolerance set:
+<span class="raw-html"><font color="red">WARNING:root:The error of the sum of the probabilities exceeds
+the maximum tolerance allowed for the error. So, you should consider to mark at least one of the tails as incomplete.
+The error is 0.03182805730620486 with a tolerance of 1e-12.</font></span> The error is due to the difference
+<span class="math notranslate nohighlight">\(1-P(X\leq 12)=3.18281\%.\)</span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poisson</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">RV</span><span class="p">(</span><span class="n">support</span><span class="p">,</span> <span class="n">prob</span><span class="p">,</span> <span class="n">is_pmf</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">complete_left</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">complete_right</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot the cumulative distribution function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poisson</span><span class="o">.</span><span class="n">plot_cdf</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/_cdf_poisson_rt_lt.png"><img alt="cumulative distribution function for the Poisson" src="../_images/_cdf_poisson_rt_lt.png" style="width: 400px;" /></a>
+<p>the plot, by default, marks the truncated tails with red dashed lines.</p>
+<p>Plot the probability mass function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poisson</span><span class="o">.</span><span class="n">plot_pmf</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/_pmf_poisson_rt_lt.png"><img alt="probability mass function for the Poisson" src="../_images/_pmf_poisson_rt_lt.png" style="width: 400px;" /></a>
+<p>the plot, by default, marks the truncated tails with red dashed lines. Note that, in this case, the plotted probability
+of the smallest mass point is plotted incorrectly, since we passed a truncated cumulative distribution function and we
+don’t have way of determining <span class="math notranslate nohighlight">\(P(X=4)\)</span>.</p>
+<p>Plot the percentile (quantile) function</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">poisson</span><span class="o">.</span><span class="n">plot_quantile</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/_quantile_poisson_rt_lt.png"><img alt="percentile function for the Poisson" src="../_images/_quantile_poisson_rt_lt.png" style="width: 400px;" /></a>
+<p>the plot, by default, marks the truncated tails with red dashed lines.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Examples</a><ul>
+<li><a class="reference internal" href="#hello-world">Hello World</a></li>
+<li><a class="reference internal" href="#the-binomial">The Binomial</a></li>
+<li><a class="reference internal" href="#incomplete-tails">Incomplete Tails</a><ul>
+<li><a class="reference internal" href="#incomplete-right-tail">Incomplete Right Tail</a></li>
+<li><a class="reference internal" href="#incomplete-left-and-right-tail">Incomplete Left and Right Tail</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="license.html"
+                        title="previous chapter">License</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/usage/examples.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="license.html" title="License"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PlotCDF 0.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, PedroCR.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
+    </div>
+  </body>
+</html>
