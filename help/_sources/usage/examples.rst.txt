@@ -1,13 +1,13 @@
 Examples
 =========
-Here we present a set of very simple examples just for you to get a feeling about the package.
+This section presents simple examples to help you get started with the package.
 
 Hello World
 ------------------
 Consider the mighty Bernoulli;  :math:`X\sim B(p)`, that is :math:`X\in \{0, 1\}` with :math:`P(X=x)=p^x(1-p)^{1-x}`,
 with :math:`p \in ]0,1[`.
 
-In this example, we'll be plotting :math:`X\sim B(0.5)`, of course. It's really simple:
+In this example, we plot :math:`X\sim B(0.5)`.
 
 
 1. Create your discrete random variable:
@@ -23,7 +23,7 @@ The result would be the same if instead of the **probability mass function** (pm
 
     bernoulli = plot.RV(support=[0, 1], prob=[.5, 1.], is_pmf=False)
 
-2. Plot it, *'et voilá'*, we've our graphic for the Bernoulli's cumulative distribution function.
+2. Plot the cumulative distribution function.
 
 .. code-block:: python
 
@@ -33,7 +33,7 @@ The result would be the same if instead of the **probability mass function** (pm
     :width: 400
     :alt: cumulative distribution function for the B(0.5)
 
-We can also plot the probability mass function
+You can also plot the probability mass function.
 
 .. code-block:: python
 
@@ -43,7 +43,7 @@ We can also plot the probability mass function
     :width: 400
     :alt: probability mass function for the B(0.5)
 
-or the percentile (quantile) function
+Or the percentile (quantile) function.
 
 .. code-block:: python
 
@@ -53,17 +53,17 @@ or the percentile (quantile) function
     :width: 400
     :alt: percentile function for the B(0.5)
 
-and you're ready to go.
+And you are ready to go.
 
 
 The Binomial
 ------------------
-A simple extension of the :ref:`Hello World`. Consider now a Binomial;  :math:`X\sim B(n, p)`, that is :math:`X\in \{0,..., n\}`
+A simple extension of :ref:`Hello World`. Consider now a Binomial;  :math:`X\sim B(n, p)`, that is :math:`X\in \{0,..., n\}`
 with :math:`P(X=x)=C^n_x p^x(1-p)^{1-x}`, with :math:`n \in \mathbb{N}`  and :math:`p \in ]0,1[`.
 
-In this example, we'll be plotting :math:`X\sim B(5, 0.5)`.
+In this example, we plot :math:`X\sim B(5, 0.5)`.
 
-In this case we've as support and pmf, respectively
+In this case, the support and PMF are:
 
 support=[0, 1, 2, 3, 4, 5]
 
@@ -76,8 +76,8 @@ prob=[0.0503284375, 0.2058890625, 0.336909375, 0.275653125, 0.1127671875, 0.0184
 
     binomial = plot.RV(support, prob)
 
-The result would be the same if instead of the **probability mass function** (pmf) you passed the
-**cumulative distribution function** (cdf).
+The result is the same if, instead of the **probability mass function** (PMF),
+you pass the **cumulative distribution function** (CDF).
 
 prob=[0.0503284375, 0.2562175, 0.593126875, 0.86878, 0.9815471875, 1.0].
 
@@ -95,7 +95,7 @@ prob=[0.0503284375, 0.2562175, 0.593126875, 0.86878, 0.9815471875, 1.0].
     :width: 400
     :alt: cumulative distribution function for the B(n,p)
 
-Plot the probability mass function
+Plot the probability mass function.
 
 .. code-block:: python
 
@@ -105,7 +105,7 @@ Plot the probability mass function
     :width: 400
     :alt: probability mass function for the B(n,p)
 
-or the percentile (quantile) function
+Or the percentile (quantile) function.
 
 .. code-block:: python
 
@@ -118,20 +118,20 @@ or the percentile (quantile) function
 
 Incomplete Tails
 ----------------------
-We will use the Poisson to explain the case for an incomplete support of the random variable.
+We use the Poisson distribution to explain incomplete support.
 Consider now a Poisson;  :math:`X\sim P(\lambda)`, that is :math:`X \in \mathbb{N}_0`
 with :math:`P(X=x)=e^{-\lambda}\frac{\lambda^x}{x!}`, with :math:`n \in \mathbb{N}`
 and :math:`\lambda \in \mathbb{R}^+`.
 
-In this case since the support is countable but not finite, we should consider that in our plot.
+Since the support is countable but not finite, truncation must be considered in the plots.
 
 Incomplete Right Tail
 ~~~~~~~~~~~~~~~~~~~~~~
-In the example we'll be using the :math:`X\sim P(5)`.
+In this example, we use :math:`X\sim P(5)`.
 
-So, if we consider to plot the subset of the support [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], we are truncating
-the right tail. When we initialize our Poisson using the supported truncated to the right, we'll get a warning
-based on the max_tol set with default 1e-12. Hence in this case, we are using
+If we plot only the support subset [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+we truncate the right tail. Initializing this truncated support can trigger a warning
+based on max_tol (default 1e-12). In this case, we use:
 
 support=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -139,10 +139,11 @@ prob=[0.006737947, 0.033689735, 0.0842243375, 0.1403738958, 0.1754673698, 0.1754
 0.0652780393, 0.0362655774].
 
 .. role:: raw-html(raw)
-   :format: html
+    :format: html
 
-We should initialize our random variable stating that the right tail is incomplete, so that, the plot signs
-this situation, in accordance with the :raw-html:`<font color="red">WARNING:root:The error of the sum of the probabilities
+We should initialize the random variable indicating that the right tail is incomplete.
+Then the plot marks this situation, and you may see a warning such as:
+:raw-html:`<font color="red">WARNING:root:The error of the sum of the probabilities
 exceeds the maximum tolerance allowed for the error. So, you should consider to mark at least one of the tails
 as incomplete. The error is 0.031828057306205304 with a tolerance of 1e-12.</font>`
 
@@ -153,7 +154,7 @@ as incomplete. The error is 0.031828057306205304 with a tolerance of 1e-12.</fon
 The error is due to the difference :math:`1-P(X\leq 9)=3.18281\%.`
 
 
-Plot the cumulative distribution function
+Plot the cumulative distribution function.
 
 .. code-block:: python
 
@@ -163,9 +164,9 @@ Plot the cumulative distribution function
     :width: 400
     :alt: cumulative distribution function for the Poisson
 
-the plot, by default, marks the truncated right tail with a red dashed line.
+By default, the plot marks the truncated right tail with a red dashed line.
 
-Plot the probability mass function
+Plot the probability mass function.
 
 .. code-block:: python
 
@@ -175,9 +176,9 @@ Plot the probability mass function
     :width: 400
     :alt: probability mass function for the Poisson
 
-the plot, by default, marks the truncated right tail with a red dashed line.
+By default, the plot marks the truncated right tail with a red dashed line.
 
-Plot the percentile (quantile) function
+Plot the percentile (quantile) function.
 
 .. code-block:: python
 
@@ -187,24 +188,24 @@ Plot the percentile (quantile) function
     :width: 400
     :alt: percentile function for the Poisson
 
-the plot, by default, marks the truncated right tail with a red dashed line.
+By default, the plot marks the truncated right tail with a red dashed line.
 
 
 
 Incomplete Left and Right Tail
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In the example we'll be using the :math:`X\sim P(5)`.
+In this example, we also use :math:`X\sim P(5)`.
 
-So, if we consider to plot the subset of the support [4, 5, 6, 7, 8, 9, 10, 11, 12], we are truncating
-both the left and right tails. When we initialize our Poisson using the supported truncated to the left and right,
-we'll get a warning based on the max_tol set with default 1e-12. Hence in this case, we are using
+If we plot only the support subset [4, 5, 6, 7, 8, 9, 10, 11, 12],
+we truncate both left and right tails. Initializing this truncated support can trigger a warning
+based on max_tol (default 1e-12). In this case, we use:
 
 support=[4, 5, 6, 7, 8, 9]
 
 prob=[0.4404932851, 0.6159606548, 0.762183463, 0.8666283259, 0.9319063653, 0.9681719427].
 
-So, we should initialize our random variable stating that the left and right tail are incomplete and we are
-using the cumulative probabilities. We'll get a warning due to the truncation above the maximum tolerance set:
+We should initialize the random variable indicating that both tails are incomplete and that
+we are using cumulative probabilities. You may see a warning due to truncation beyond the configured tolerance:
 :raw-html:`<font color="red">WARNING:root:The error of the sum of the probabilities exceeds
 the maximum tolerance allowed for the error. So, you should consider to mark at least one of the tails as incomplete.
 The error is 0.03182805730620486 with a tolerance of 1e-12.</font>` The error is due to the difference
@@ -215,10 +216,7 @@ The error is 0.03182805730620486 with a tolerance of 1e-12.</font>` The error is
     poisson = plot.RV(support, prob, is_pmf=False, complete_left=False, complete_right=False)
 
 
-.. role:: raw-html(raw)
-   :format: html
-
-Plot the cumulative distribution function
+Plot the cumulative distribution function.
 
 .. code-block:: python
 
@@ -228,9 +226,9 @@ Plot the cumulative distribution function
     :width: 400
     :alt: cumulative distribution function for the Poisson
 
-the plot, by default, marks the truncated tails with red dashed lines.
+By default, the plot marks the truncated tails with red dashed lines.
 
-Plot the probability mass function
+Plot the probability mass function.
 
 .. code-block:: python
 
@@ -240,11 +238,12 @@ Plot the probability mass function
     :width: 400
     :alt: probability mass function for the Poisson
 
-the plot, by default, marks the truncated tails with red dashed lines. Note that, in this case, the plotted probability
-of the smallest mass point is plotted incorrectly, since we passed a truncated cumulative distribution function and we
-don't have way of determining :math:`P(X=4)`.
+By default, the plot marks the truncated tails with red dashed lines.
+Note that, in this case, the plotted probability of the smallest mass point is incorrect,
+because we pass a truncated cumulative distribution function and do not have enough
+information to determine :math:`P(X=4)`.
 
-Plot the percentile (quantile) function
+Plot the percentile (quantile) function.
 
 .. code-block:: python
 
@@ -254,5 +253,5 @@ Plot the percentile (quantile) function
     :width: 400
     :alt: percentile function for the Poisson
 
-the plot, by default, marks the truncated tails with red dashed lines.
+By default, the plot marks the truncated tails with red dashed lines.
 

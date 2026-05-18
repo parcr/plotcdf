@@ -1,8 +1,12 @@
-Plot Discrete Cumulative Distribution Functions
-================================================
+PlotCDF Documentation
+=====================
 
-This python package allows us to plot beautiful cumulative distributions functions and quantile functions
-for discrete random variables.
+PlotCDF provides utilities to model and visualize discrete random variables.
+The package validates support and probability inputs and supports plotting:
+
+- Probability mass functions (PMF)
+- Cumulative distribution functions (CDF)
+- Quantile functions
 
 .. toctree::
    :maxdepth: 2
@@ -13,7 +17,7 @@ for discrete random variables.
 
 
 PlotCDF Discrete Modules
-===========================
+========================
 .. automodule:: discrete.plot
    :members:
 

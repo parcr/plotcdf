@@ -1,5 +1,12 @@
-# This script allows us to prepare the data so we can plot beautiful graphics for discrete random variables.
+"""Utilities to model and plot discrete random variables.
 
+This module exposes the :class:`RV` class, which validates support/probability
+inputs and renders PMF, CDF, and quantile plots with configurable Matplotlib
+style dictionaries.
+"""
+
+
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 from discrete import checks
 import numpy as np
@@ -9,24 +16,39 @@ import logging
 
 
 class RV:
-    '''
-    We use the class to instantiate a discrete random variable, so we can make beautiful plots for the
-    point mass function (pmf) but more specifically to the cumulative distribution function (cdf) and the
-    quantile (percentile) function.
+    """Discrete random variable model with PMF/CDF/quantile plotting helpers.
 
-    :param support: The part of the support of the discrete random variable that we want to plot, that is, the mass points that we will be using. You should pass any type that can be converted to a numpy array and increasingly ordered.
-    :param prob: The probability or the cumulative probability for each mass point in the support that we will be using. You should pass any type that can be converted to a numpy array.
-    :param is_pmf: A boolean stating if in prob you are passing the pmf or the cdf. By default it's True, so you'll be passing the pmf.
-    :param complete_left: A boolean to state if the left tail is complete, that is, if the first mass point in the support is the minimum mass point for this discrete random variable. By default it's True.
-    :param complete_right: A boolean to state if the right tail is complete, that is, if the last mass point in the support is the maximum mass point for this discrete random variable. By default it's True.
-    :param max_tol: A tolerance value so you can check if the sum of the probabilities are equal to 1 or not. If not, you'll get a warning. A default float of 1e-12.
-    '''
+    Parameters
+    ----------
+    support : iterable
+        Support values (mass points) for the random variable.
+    prob : iterable of float
+        PMF values when ``is_pmf=True`` or CDF values when ``is_pmf=False``.
+    is_pmf : bool, default=True
+        Whether ``prob`` represents PMF values.
+    complete_left : bool, default=True
+        Whether the left tail is complete.
+    complete_right : bool, default=True
+        Whether the right tail is complete.
+    max_tol : float, default=1e-12
+        Tolerance used when checking probability sum consistency.
+    """
 
-    def __new__(cls, support, prob, is_pmf=True, complete_left=True, complete_right=True, max_tol=1e-12):
-        messages = []
+    def __new__(
+        cls,
+        support: Iterable[Any],
+        prob: Iterable[float],
+        is_pmf: bool = True,
+        complete_left: bool = True,
+        complete_right: bool = True,
+        max_tol: float = 1e-12,
+    ) -> Optional['RV']:
+        """Validate initialization inputs before creating an instance."""
+        messages: list[str] = []
 
         if not is_pmf:
             try:
+                # Normalize CDF input into PMF so downstream checks stay unified.
                 p = np.array(prob)
                 prob = np.append(p[0], p[1:] - p[:-1])
             except TypeError as e:
@@ -35,37 +57,37 @@ class RV:
         try:
             checks.support(support)
         except(ValueError, TypeError) as e:
-            messages.append(e)
+            messages.append(str(e))
 
         try:
             checks.prob(prob, max_tol)
         except(ValueError, TypeError) as e:
-            messages.append(e)
+            messages.append(str(e))
 
         try:
             checks.comp_supp_prob(support, prob)
         except TypeError as e:
-            messages.append(e)
+            messages.append(str(e))
 
         try:
             checks.tolerance(max_tol)
         except ValueError as e:
-            messages.append(e)
+            messages.append(str(e))
 
         try:
             checks.tail(complete_left)
         except TypeError as e:
-            messages.append(e)
+            messages.append(str(e))
 
         try:
             checks.tail(complete_right)
         except TypeError as e:
-            messages.append(e)
+            messages.append(str(e))
 
         try:
             checks.is_pmf(is_pmf)
         except TypeError as e:
-            messages.append(e)
+            messages.append(str(e))
 
         if not messages:
             return object.__new__(cls)
@@ -73,7 +95,16 @@ class RV:
             logging.critical(messages)
             return None
 
-    def __init__(self, support, prob, is_pmf=True, complete_left=True, complete_right=True, max_tol=1e-12):
+    def __init__(
+        self,
+        support: Iterable[Any],
+        prob: Iterable[float],
+        is_pmf: bool = True,
+        complete_left: bool = True,
+        complete_right: bool = True,
+        max_tol: float = 1e-12,
+    ) -> None:
+        """Initialize a validated random variable and cached cumulative probabilities."""
         self.support = support
         self.__tol = max_tol
         self.__is_pmf = is_pmf
@@ -82,7 +113,7 @@ class RV:
         if self.is_pmf:
             self.__cum_prob = self.from_pmf_to_cdf(self.prob)
         else:
-            self.__cum_prob = prob
+            self.__cum_prob = np.array(prob)
         self.complete_left = complete_left
         self.complete_right = complete_right
         if self.__warning:
@@ -100,15 +131,17 @@ class RV:
         return msg
 
     @property
-    def warning(self):
+    def warning(self) -> str:
+        """Return warning text when probabilities do not sum to one within tolerance."""
         return self.__warning
 
     @property
-    def support(self):
+    def support(self) -> np.ndarray:
+        """Return validated support values."""
         return self.__support
 
     @support.setter
-    def support(self, s):
+    def support(self, s: Iterable[Any]) -> None:
         s = checks.support(s)
         try:
             p = self.prob
@@ -121,15 +154,17 @@ class RV:
             self.__support = s
 
     @property
-    def is_pmf(self):
+    def is_pmf(self) -> bool:
+        """Whether input probabilities represent PMF values."""
         return self.__is_pmf
 
     @property
-    def prob(self):
+    def prob(self) -> Any:
+        """Return validated PMF values."""
         return self.__prob
 
     @prob.setter
-    def prob(self, p):
+    def prob(self, p: Any) -> None:
         if not self.is_pmf:
             p = self.from_cdf_to_pmf(p)
         checks.support(p)
@@ -149,19 +184,22 @@ class RV:
             self.__prob = p
 
     @property
-    def cum_prob(self):
+    def cum_prob(self) -> Any:
+        """Return cumulative probabilities."""
         return self.__cum_prob
 
     @property
-    def tol(self):
+    def tol(self) -> float:
+        """Return tolerance used in probability sum checks."""
         return self.__tol
 
     @property
-    def complete_left(self):
+    def complete_left(self) -> bool:
+        """Whether the left tail is complete."""
         return self.__complete_left
 
     @complete_left.setter
-    def complete_left(self, t):
+    def complete_left(self, t: bool) -> None:
         try:
             checks.tail(t)
             self.__complete_left = t
@@ -169,11 +207,12 @@ class RV:
             print(e)
 
     @property
-    def complete_right(self):
+    def complete_right(self) -> bool:
+        """Whether the right tail is complete."""
         return self.__complete_right
 
     @complete_right.setter
-    def complete_right(self, t):
+    def complete_right(self, t: bool) -> None:
         try:
             checks.tail(t)
             self.__complete_right = t
@@ -181,51 +220,74 @@ class RV:
             print(e)
 
     @staticmethod
-    def from_pmf_to_cdf(probs):
-        '''
-        Converts a point mass function (pmf) to a cumulative distribution function (cdf).
+    def from_pmf_to_cdf(probs: Iterable[float]) -> np.ndarray:
+        """Convert PMF values into CDF values.
 
-        :param probs: The probabilities, that should be positive and with a sum smaller or equal to 1.
+        Parameters
+        ----------
+        probs : iterable of float
+            Point-mass probabilities.
 
-        :return: A numpy array with the pmf.
-        '''
+        Returns
+        -------
+        numpy.ndarray
+            Cumulative probabilities.
+        """
         probs = np.array(probs)
         return np.cumsum(probs)
 
     @staticmethod
-    def from_cdf_to_pmf(cum_probs):
-        '''
-        Converts a cumulative distribution function (cdf) to a point mass function (pmf).
+    def from_cdf_to_pmf(cum_probs: Iterable[float]) -> np.ndarray:
+        """Convert CDF values into PMF values.
 
-        :param cum_probs: The cumulative probabilities, that should be positive, increasing and with a maximum smaller or equal to 1.
+        Parameters
+        ----------
+        cum_probs : iterable of float
+            Cumulative probabilities.
 
-        :return: A numpy array with the cdf.
-        '''
+        Returns
+        -------
+        numpy.ndarray
+            Point-mass probabilities.
+        """
         cum_probs = np.array(cum_probs)
         return np.append(cum_probs[0], cum_probs[1:] - cum_probs[:-1])
 
-    def plot_cdf(self, rv_name='X', graph_name='', left_points=dict(), right_points=dict(), hlines=dict(),
-                 left_line_complete=dict(), right_line_complete=dict(),
-                 left_line_incomplete=dict(), right_line_incomplete=dict(),
-                 grid=dict(), x_y_ticks=10, save=True):
-        '''
-        The method used to plot the cumulative distribution function.
+    def plot_cdf(
+        self,
+        rv_name: str = 'X',
+        graph_name: str = '',
+        left_points: Dict[str, Any] = dict(),
+        right_points: Dict[str, Any] = dict(),
+        hlines: Dict[str, Any] = dict(),
+        left_line_complete: Dict[str, Any] = dict(),
+        right_line_complete: Dict[str, Any] = dict(),
+        left_line_incomplete: Dict[str, Any] = dict(),
+        right_line_incomplete: Dict[str, Any] = dict(),
+        grid: Dict[str, Any] = dict(),
+        x_y_ticks: int = 10,
+        save: bool = True,
+    ) -> Tuple[Any, Any]:
+        """Plot the cumulative distribution function.
 
-        :param rv_name: The name that will appear in the title.
-        :param graph_name: the graph's name used to save the file
-        :param left_points: A dictionary so you can pass whatever parameters to the left points in the plots.
-        :param right_points: A dictionary so you can pass whatever parameters to the right points in the plots.
-        :param hlines: A dictionary so you can pass whatever parameters to horizontal lines in the plots.
-        :param left_line_complete: A dictionary so you can pass whatever parameters to the left (the first) line in the case the left tail is complete.
-        :param right_line_complete: A dictionary so you can pass whatever parameters to the right line (the last) in the case the left tail is complete.
-        :param left_line_incomplete: A dictionary so you can pass whatever parameters to the left (the first) line in the case the left tail is incomplete.
-        :param right_line_incomplete: A dictionary so you can pass whatever parameters to the right line (the last) in the case the left tail is incomplete.
-        :param grid: A dictionary so you can pass whatever parameters to the grid's design.
-        :param x_y_ticks: The number of axis x and axis y thicks that you want to use. If the number passed is below the supports's cardinality the default will be used. This is necessary or you'll end up with a graph to much populated in the axis and difficult to read.
-        :param save: If you want to save the graph plotted. By default will save an png file, but you can always change it by calling the figure returned (see :return below).
+        Parameters
+        ----------
+        rv_name : str, default='X'
+            Variable name used in the plot title.
+        graph_name : str, default=''
+            Prefix used when saving the output image.
+        left_points, right_points, hlines, left_line_complete, right_line_complete, left_line_incomplete, right_line_incomplete, grid : dict
+            Matplotlib style dictionaries for corresponding elements.
+        x_y_ticks : int, default=10
+            Maximum number of support values to auto-apply as ticks.
+        save : bool, default=True
+            Whether to save the generated plot as a PNG file.
 
-        :return: A tuple with the figure and the plot.
-        '''
+        Returns
+        -------
+        tuple
+            Matplotlib ``(figure, axes)``.
+        """
         increment = np.average(np.diff(self.__support))
         ext_support = np.append(self.__support, self.__support[-1] + increment)
         ext_support = np.insert(ext_support, 0, self.__support[0] - increment)
@@ -327,23 +389,37 @@ class RV:
         plt.show()
         return fig, ax
 
-    def plot_pmf(self, rv_name='X', graph_name='', points=dict(),
-                 left_line_incomplete=dict(), right_line_incomplete=dict(),
-                 grid=dict(), x_y_ticks=10, save=True):
-        '''
-        The method used to plot the probability mass function.
+    def plot_pmf(
+        self,
+        rv_name: str = 'X',
+        graph_name: str = '',
+        points: Dict[str, Any] = dict(),
+        left_line_incomplete: Dict[str, Any] = dict(),
+        right_line_incomplete: Dict[str, Any] = dict(),
+        grid: Optional[Dict[str, Any]] = dict(),
+        x_y_ticks: int = 10,
+        save: bool = True,
+    ) -> Tuple[Any, Any]:
+        """Plot the probability mass function.
 
-        :param rv_name: The name that will appear in the title.
-        :param graph_name: the graph's name used to save the file
-        :param points: A dictionary so you can pass whatever parameters to the points in the plots.
-        :param left_line_incomplete: A dictionary so you can pass whatever parameters to the left (the first) line in the case the left tail is incomplete.
-        :param right_line_incomplete: A dictionary so you can pass whatever parameters to the right line (the last) in the case the left tail is incomplete.
-        :param grid: A dictionary so you can pass whatever parameters to the grid's design.
-        :param x_y_ticks: The number of axis x and axis y thicks that you want to use. If the number passed is below the supports's cardinality the default will be used. This is necessary or you'll end up with a graph to much populated in the axis and difficult to read.
-        :param save: If you want to save the graph plotted. By default will save an png file, but you can always change it by calling the figure returned (see returns below).
+        Parameters
+        ----------
+        rv_name : str, default='X'
+            Variable name used in the plot title.
+        graph_name : str, default=''
+            Prefix used when saving the output image.
+        points, left_line_incomplete, right_line_incomplete, grid : dict
+            Matplotlib style dictionaries for corresponding elements.
+        x_y_ticks : int, default=10
+            Maximum number of support values to auto-apply as ticks.
+        save : bool, default=True
+            Whether to save the generated plot as a PNG file.
 
-        :return: A tuple with the figure and the plot.
-        '''
+        Returns
+        -------
+        tuple
+            Matplotlib ``(figure, axes)``.
+        """
 
         fig, ax = plt.subplots()
         if 'color' not in points:
@@ -396,7 +472,7 @@ class RV:
             ax.hlines(y=self.__prob[-1], xmin=self.__support[len(self.__support) - 1],
                       xmax=self.__support[len(self.__support) - 1] + increment,
                       **right_line_incomplete)
-        if grid and grid is not None:
+        if grid:
             plt.grid(b=True, **grid)
 
         if systems.is_windows():
@@ -411,28 +487,41 @@ class RV:
         plt.show()
         return fig, ax
 
-    def plot_quantile(self, rv_name='X', graph_name='', left_points=dict(), right_points=dict(), hlines=dict(),
-                      left_line_complete=dict(), right_line_complete=dict(),
-                      left_line_incomplete=dict(), right_line_incomplete=dict(),
-                      grid=dict(), x_y_ticks=10, save=True):
-        '''
-        The method used to plot the percentile (quantile) function.
+    def plot_quantile(
+        self,
+        rv_name: str = 'X',
+        graph_name: str = '',
+        left_points: Dict[str, Any] = dict(),
+        right_points: Dict[str, Any] = dict(),
+        hlines: Dict[str, Any] = dict(),
+        left_line_complete: Dict[str, Any] = dict(),
+        right_line_complete: Dict[str, Any] = dict(),
+        left_line_incomplete: Dict[str, Any] = dict(),
+        right_line_incomplete: Dict[str, Any] = dict(),
+        grid: Dict[str, Any] = dict(),
+        x_y_ticks: int = 10,
+        save: bool = True,
+    ) -> Tuple[Any, Any]:
+        """Plot the quantile function.
 
-        :param rv_name: The name that will appear in the title.
-        :param graph_name: the graph's name used to save the file
-        :param left_points: A dictionary so you can pass whatever parameters to the left points in the plots.
-        :param right_points: A dictionary so you can pass whatever parameters to the right points in the plots.
-        :param hlines: A dictionary so you can pass whatever parameters to horizontal lines in the plots.
-        :param left_line_complete: A dictionary so you can pass whatever parameters to the left (the first) line in the case the left tail is complete.
-        :param right_line_complete: A dictionary so you can pass whatever parameters to the right line (the last) in the case the left tail is complete.
-        :param left_line_incomplete: A dictionary so you can pass whatever parameters to the left (the first) line in the case the left tail is incomplete.
-        :param right_line_incomplete: A dictionary so you can pass whatever parameters to the right line (the last) in the case the left tail is incomplete.
-        :param grid: A dictionary so you can pass whatever parameters to the grid's design.
-        :param x_y_ticks: The number of axis x and axis y thicks that you want to use. If the number passed is below the supports's cardinality the default will be used. This is necessary or you'll end up with a graph to much populated in the axis and difficult to read.
-        :param save: If you want to save the graph plotted. By default will save an png file, but you can always change it by calling the figure returned (see returns below).
+        Parameters
+        ----------
+        rv_name : str, default='X'
+            Variable name used in the plot title.
+        graph_name : str, default=''
+            Prefix used when saving the output image.
+        left_points, right_points, hlines, left_line_complete, right_line_complete, left_line_incomplete, right_line_incomplete, grid : dict
+            Matplotlib style dictionaries for corresponding elements.
+        x_y_ticks : int, default=10
+            Maximum number of support values to auto-apply as ticks.
+        save : bool, default=True
+            Whether to save the generated plot as a PNG file.
 
-        :return: A tuple with the figure and the plot.
-        '''
+        Returns
+        -------
+        tuple
+            Matplotlib ``(figure, axes)``.
+        """
         increment = np.average(np.diff(self.__cum_prob))
         # ext_probabilities = np.append(self.__cum_prob, self.__cum_prob[-1] + increment)
         ext_probabilities = np.insert(self.__cum_prob, 0, self.__cum_prob[0] - increment)
@@ -515,7 +604,7 @@ class RV:
         plt.plot(ext_probabilities[ext_probabilities.size - 2], ext_support[ext_probabilities.size - 1], **left_points)
         plt.title('Quantile Function for ' + rv_name.upper())
         plt.xlabel('p')
-        plt.ylabel('$F\overleftarrow{(p)}$')
+        plt.ylabel('$F\\overleftarrow{(p)}$')
 
         if x_y_ticks and len(self.__support) <= x_y_ticks:
             ax.set_xticks(self.__cum_prob)

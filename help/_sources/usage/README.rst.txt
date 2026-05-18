@@ -3,22 +3,22 @@ README
 
 PlotCDF
 ^^^^^^^^^^^^
-This python package allows us to plot beautiful cumulative distributions functions and quantile functions
-for discrete random variables.
+PlotCDF provides utilities to model and visualize discrete random variables.
+The package supports PMF, CDF, and quantile plots.
 
 Installation
 ^^^^^^^^^^^^^^
-```
-$ pip install plotcdf
-```
+.. code-block:: bash
+
+	pip install plotcdf
 
 Usage
 ^^^^^^^^^^^^^^
-Get it in the [GitHub](https://github.com/parcr/plotcdf)
+Project repository: https://github.com/parcr/plotcdf
 
 License
 ^^^^^^^^^^^^
-This module is released under the MIT license. Please, see  :ref:`license_label` for details
+This package is released under the MIT license.
 
 Contact
 ^^^^^^^^^^^^^^

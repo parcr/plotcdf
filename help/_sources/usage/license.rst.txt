@@ -3,7 +3,7 @@
 License
 ===================================
 
-Copyright (C) 2019 Pedro Corte Real
+Copyright (C) 2019-2026 Pedro Corte Real
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
