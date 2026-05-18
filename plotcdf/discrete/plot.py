@@ -5,10 +5,12 @@ inputs and renders PMF, CDF, and quantile plots with configurable Matplotlib
 style dictionaries.
 """
 
-
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import Any, Dict, Iterable, Optional, Tuple
 
-from discrete import checks
+from . import checks
 import numpy as np
 import matplotlib.pyplot as plt
 from library import systems
@@ -42,7 +44,7 @@ class RV:
         complete_left: bool = True,
         complete_right: bool = True,
         max_tol: float = 1e-12,
-    ) -> Optional['RV']:
+    ) -> 'RV':
         """Validate initialization inputs before creating an instance."""
         messages: list[str] = []
 
@@ -91,9 +93,9 @@ class RV:
 
         if not messages:
             return object.__new__(cls)
-        else:
-            logging.critical(messages)
-            return None
+
+        logging.critical(messages)
+        raise ValueError('; '.join(messages))
 
     def __init__(
         self,
@@ -376,7 +378,7 @@ class RV:
             ax.set_xticks(self.__support)
             ax.set_yticks(self.__cum_prob)
         if grid:
-            plt.grid(b=True, **grid)
+            plt.grid(visible=True, **grid)
         if systems.is_windows():
             manager = plt.get_current_fig_manager()
             manager.window.showMaximized()
@@ -386,7 +388,7 @@ class RV:
             file_name = graph_name + '_cdf_' + rv_name + '.png'
             plt.savefig(file_name, format='png', dpi=600)
 
-        plt.show()
+        # plt.show()
         return fig, ax
 
     def plot_pmf(
@@ -473,7 +475,7 @@ class RV:
                       xmax=self.__support[len(self.__support) - 1] + increment,
                       **right_line_incomplete)
         if grid:
-            plt.grid(b=True, **grid)
+            plt.grid(visible=True, **grid)
 
         if systems.is_windows():
             manager = plt.get_current_fig_manager()
@@ -484,7 +486,7 @@ class RV:
             file_name = graph_name + '_pmf_' + rv_name + '.png'
             plt.savefig(file_name, format='png', dpi=600)
 
-        plt.show()
+        # plt.show()
         return fig, ax
 
     def plot_quantile(
@@ -610,7 +612,7 @@ class RV:
             ax.set_xticks(self.__cum_prob)
             ax.set_yticks(self.__support)
         if grid:
-            plt.grid(b=True, **grid)
+            plt.grid(visible=True, **grid)
         if systems.is_windows():
             manager = plt.get_current_fig_manager()
             manager.window.showMaximized()
@@ -620,5 +622,5 @@ class RV:
             file_name = graph_name + '_quantile_' + rv_name + '.png'
             plt.savefig(file_name, format='png', dpi=600)
 
-        plt.show()
+        # plt.show()
         return fig, ax

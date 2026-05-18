@@ -9,7 +9,7 @@ They intentionally raise informative exceptions with standardized messages from
 from typing import Any, Iterable, Optional
 
 import numpy as np
-from discrete import messages as msn
+from . import messages as msn
 
 
 def support(s: Iterable[Any]) -> np.ndarray:
