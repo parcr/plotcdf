@@ -5,15 +5,12 @@ inputs and renders PMF, CDF, and quantile plots with configurable Matplotlib
 style dictionaries.
 """
 
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import Any, Dict, Iterable, Optional, Tuple
 
 from . import checks
 import numpy as np
 import matplotlib.pyplot as plt
-from library import systems
+from ..library import systems
 import logging
 
 
@@ -151,7 +148,7 @@ class RV:
                 checks.comp_supp_prob(s, p)
                 self.__support = s
             except (ValueError, TypeError) as e:
-                print(e)
+                logging.error(e)
         except AttributeError as e:
             self.__support = s
 
@@ -173,7 +170,7 @@ class RV:
         try:
             checks.prob(p, self.tol)
         except(ValueError, TypeError) as e:
-            print(e)
+            logging.error(e)
             return
         try:
             s = self.support
@@ -181,7 +178,7 @@ class RV:
                 checks.comp_supp_prob(s, p)
                 self.__prob = p
             except (ValueError, TypeError) as e:
-                print(e)
+                logging.error(e)
         except AttributeError as e:
             self.__prob = p
 
@@ -206,7 +203,7 @@ class RV:
             checks.tail(t)
             self.__complete_left = t
         except TypeError as e:
-            print(e)
+            logging.error(e)
 
     @property
     def complete_right(self) -> bool:
@@ -219,7 +216,7 @@ class RV:
             checks.tail(t)
             self.__complete_right = t
         except TypeError as e:
-            print(e)
+            logging.error(e)
 
     @staticmethod
     def from_pmf_to_cdf(probs: Iterable[float]) -> np.ndarray:
@@ -259,14 +256,14 @@ class RV:
         self,
         rv_name: str = 'X',
         graph_name: str = '',
-        left_points: Dict[str, Any] = dict(),
-        right_points: Dict[str, Any] = dict(),
-        hlines: Dict[str, Any] = dict(),
-        left_line_complete: Dict[str, Any] = dict(),
-        right_line_complete: Dict[str, Any] = dict(),
-        left_line_incomplete: Dict[str, Any] = dict(),
-        right_line_incomplete: Dict[str, Any] = dict(),
-        grid: Dict[str, Any] = dict(),
+        left_points: Optional[Dict[str, Any]] = None,
+        right_points: Optional[Dict[str, Any]] = None,
+        hlines: Optional[Dict[str, Any]] = None,
+        left_line_complete: Optional[Dict[str, Any]] = None,
+        right_line_complete: Optional[Dict[str, Any]] = None,
+        left_line_incomplete: Optional[Dict[str, Any]] = None,
+        right_line_incomplete: Optional[Dict[str, Any]] = None,
+        grid: Optional[Dict[str, Any]] = None,
         x_y_ticks: int = 10,
         save: bool = True,
     ) -> Tuple[Any, Any]:
@@ -280,6 +277,8 @@ class RV:
             Prefix used when saving the output image.
         left_points, right_points, hlines, left_line_complete, right_line_complete, left_line_incomplete, right_line_incomplete, grid : dict
             Matplotlib style dictionaries for corresponding elements.
+            Pass ``None`` to use defaults. Inputs are copied internally and are
+            never mutated in-place.
         x_y_ticks : int, default=10
             Maximum number of support values to auto-apply as ticks.
         save : bool, default=True
@@ -290,6 +289,17 @@ class RV:
         tuple
             Matplotlib ``(figure, axes)``.
         """
+        # Copy caller-provided style dictionaries so defaults do not mutate inputs.
+        left_points = dict(left_points or {})
+        right_points = dict(right_points or {})
+        hlines = dict(hlines or {})
+        left_line_complete = dict(left_line_complete or {})
+        right_line_complete = dict(right_line_complete or {})
+        left_line_incomplete = dict(left_line_incomplete or {})
+        right_line_incomplete = dict(right_line_incomplete or {})
+        grid = dict(grid or {})
+
+        # Extend support by one step on each side to draw boundary segments.
         increment = np.average(np.diff(self.__support))
         ext_support = np.append(self.__support, self.__support[-1] + increment)
         ext_support = np.insert(ext_support, 0, self.__support[0] - increment)
@@ -395,10 +405,10 @@ class RV:
         self,
         rv_name: str = 'X',
         graph_name: str = '',
-        points: Dict[str, Any] = dict(),
-        left_line_incomplete: Dict[str, Any] = dict(),
-        right_line_incomplete: Dict[str, Any] = dict(),
-        grid: Optional[Dict[str, Any]] = dict(),
+        points: Optional[Dict[str, Any]] = None,
+        left_line_incomplete: Optional[Dict[str, Any]] = None,
+        right_line_incomplete: Optional[Dict[str, Any]] = None,
+        grid: Optional[Dict[str, Any]] = None,
         x_y_ticks: int = 10,
         save: bool = True,
     ) -> Tuple[Any, Any]:
@@ -412,6 +422,8 @@ class RV:
             Prefix used when saving the output image.
         points, left_line_incomplete, right_line_incomplete, grid : dict
             Matplotlib style dictionaries for corresponding elements.
+            Pass ``None`` to use defaults. Inputs are copied internally and are
+            never mutated in-place.
         x_y_ticks : int, default=10
             Maximum number of support values to auto-apply as ticks.
         save : bool, default=True
@@ -422,6 +434,11 @@ class RV:
         tuple
             Matplotlib ``(figure, axes)``.
         """
+        # Copy caller-provided style dictionaries so defaults do not mutate inputs.
+        points = dict(points or {})
+        left_line_incomplete = dict(left_line_incomplete or {})
+        right_line_incomplete = dict(right_line_incomplete or {})
+        grid = None if grid is None else dict(grid)
 
         fig, ax = plt.subplots()
         if 'color' not in points:
@@ -493,14 +510,14 @@ class RV:
         self,
         rv_name: str = 'X',
         graph_name: str = '',
-        left_points: Dict[str, Any] = dict(),
-        right_points: Dict[str, Any] = dict(),
-        hlines: Dict[str, Any] = dict(),
-        left_line_complete: Dict[str, Any] = dict(),
-        right_line_complete: Dict[str, Any] = dict(),
-        left_line_incomplete: Dict[str, Any] = dict(),
-        right_line_incomplete: Dict[str, Any] = dict(),
-        grid: Dict[str, Any] = dict(),
+        left_points: Optional[Dict[str, Any]] = None,
+        right_points: Optional[Dict[str, Any]] = None,
+        hlines: Optional[Dict[str, Any]] = None,
+        left_line_complete: Optional[Dict[str, Any]] = None,
+        right_line_complete: Optional[Dict[str, Any]] = None,
+        left_line_incomplete: Optional[Dict[str, Any]] = None,
+        right_line_incomplete: Optional[Dict[str, Any]] = None,
+        grid: Optional[Dict[str, Any]] = None,
         x_y_ticks: int = 10,
         save: bool = True,
     ) -> Tuple[Any, Any]:
@@ -514,6 +531,8 @@ class RV:
             Prefix used when saving the output image.
         left_points, right_points, hlines, left_line_complete, right_line_complete, left_line_incomplete, right_line_incomplete, grid : dict
             Matplotlib style dictionaries for corresponding elements.
+            Pass ``None`` to use defaults. Inputs are copied internally and are
+            never mutated in-place.
         x_y_ticks : int, default=10
             Maximum number of support values to auto-apply as ticks.
         save : bool, default=True
@@ -524,6 +543,17 @@ class RV:
         tuple
             Matplotlib ``(figure, axes)``.
         """
+        # Copy caller-provided style dictionaries so defaults do not mutate inputs.
+        left_points = dict(left_points or {})
+        right_points = dict(right_points or {})
+        hlines = dict(hlines or {})
+        left_line_complete = dict(left_line_complete or {})
+        right_line_complete = dict(right_line_complete or {})
+        left_line_incomplete = dict(left_line_incomplete or {})
+        right_line_incomplete = dict(right_line_incomplete or {})
+        grid = dict(grid or {})
+
+        # Extend the probability axis to render left/right boundary quantile segments.
         increment = np.average(np.diff(self.__cum_prob))
         # ext_probabilities = np.append(self.__cum_prob, self.__cum_prob[-1] + increment)
         ext_probabilities = np.insert(self.__cum_prob, 0, self.__cum_prob[0] - increment)

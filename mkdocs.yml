@@ -1,0 +1,18 @@
+site_name: plotcdf
+site_description: Utilities to model and visualize discrete random variables
+repo_name: parcr/plotcdf
+repo_url: https://github.com/parcr/plotcdf
+theme:
+  name: readthedocs
+  # name: mkdocs
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Examples: examples.md
+  - API Reference: api.md
+  - System Utilities: systems.md
+  - Validation Messages: messages.md
+  - Notes: notes.md
+markdown_extensions:
+  - admonition
+  - tables

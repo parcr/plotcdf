@@ -36,3 +36,13 @@ rv.plot_quantile(rv_name="X", graph_name="example", save=False)
 
 - `prob` can represent PMF values (`is_pmf=True`) or CDF values (`is_pmf=False`).
 - Plot methods return a `(figure, axes)` tuple for further customization.
+
+## MkDocs
+
+Project documentation can be served locally with MkDocs:
+
+```bash
+mkdocs serve
+```
+
+Then open `http://127.0.0.1:8000`.

@@ -1,0 +1,9 @@
+# Core package dependencies
+numpy>=1.23
+matplotlib>=3.7
+
+# Example scripts
+scipy>=1.10
+
+# Documentation
+mkdocs>=1.5

@@ -8,6 +8,8 @@ import os
 import platform
 from typing import Any
 
+__all__ = ['get_os_name', 'get_all_platform', 'get_system', 'is_windows']
+
 
 def get_os_name() -> str:
     """Return the normalized OS-dependent module name (for example ``'nt'``)."""
@@ -26,8 +28,4 @@ def get_system() -> str:
 
 def is_windows() -> bool:
     """Return ``True`` when running on Windows, ``False`` otherwise."""
-    if get_os_name() == 'nt':
-        return True
-    return False
-
-#  print(get_system())
+    return get_os_name() == 'nt'
