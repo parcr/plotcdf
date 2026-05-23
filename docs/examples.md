@@ -1,129 +1,138 @@
 # Examples
 
-This page mirrors the runnable scripts under `examples/` and shows common usage patterns.
+This page documents all runnable Python scripts in `examples/`.
 
-## Run example scripts
+## Run the scripts
 
-From repository root:
+From the repository root:
 
 ```bash
-/workspaces/plotcdf/.venv/bin/python examples/bernoulli.py
-/workspaces/plotcdf/.venv/bin/python examples/binomial.py
-/workspaces/plotcdf/.venv/bin/python examples/poisson.py
+python examples/bernoulli.py
+python examples/binomial.py
+python examples/poisson.py
 ```
 
-Generated images are saved under:
+Each script writes plots into its own output directory:
 
 - `examples/bernoulli_output/`
 - `examples/binomial_output/`
 - `examples/poisson_output/`
 
-## Bernoulli example
+## API links
+
+Jump to the API reference for objects used in these examples:
+
+- `plotcdf.discrete.plot.RV`: [RV class in API reference](api.md)
+- Methods used in all scripts: `plot_pmf`, `plot_cdf`, `plot_quantile`
+
+## `examples/bernoulli.py`
+
+Goal: show a two-point Bernoulli random variable and generate PMF, CDF, and quantile plots.
+
+Key implementation notes:
+
+- Demonstrates both input modes: PMF (`is_pmf=True`, default) and CDF (`is_pmf=False`).
+- Saves figures with deterministic names: `bernoulli_pmf.png`, `bernoulli_cdf.png`, `bernoulli_quantile.png`.
+- Shows figures only when Matplotlib runs with an interactive backend.
+
+Annotated core:
 
 ```python
-from plotcdf.discrete import plot
-
 p = 0.5
-bernoulli = plot.RV(support=[0, 1], prob=[1 - p, p])
 
-fig_cdf, ax_cdf = bernoulli.plot_cdf(rv_name="bernoulli", save=False)
-fig_pmf, ax_pmf = bernoulli.plot_pmf(rv_name="bernoulli", save=False)
-fig_q, ax_q = bernoulli.plot_quantile(rv_name="bernoulli", save=False)
+# PMF input: [P(X=0), P(X=1)]
+bernoulli_from_pmf = plot.RV(support=[0, 1], prob=[1 - p, p])
+
+# Equivalent CDF input: [F(0), F(1)]
+bernoulli = plot.RV(support=[0, 1], prob=[1 - p, 1.0], is_pmf=False)
 ```
-
-### Output plots
 
 !!! example "Bernoulli PMF"
 	![Bernoulli PMF](assets/examples/bernoulli_pmf.png)
-	PMF: two mass points at 0 and 1 with probabilities 0.5 and 0.5.
 
 !!! example "Bernoulli CDF"
 	![Bernoulli CDF](assets/examples/bernoulli_cdf.png)
-	CDF: one jump at 0 and a final jump to 1 at 1.
 
 !!! example "Bernoulli quantile"
 	![Bernoulli quantile](assets/examples/bernoulli_quantile.png)
-	Quantile: step mapping from probability levels to the two support values.
 
-## Binomial example
+## `examples/binomial.py`
+
+Goal: build a Binomial($n=5$, $p=0.5$) model using SciPy probabilities and visualize all three functions.
+
+Key implementation notes:
+
+- Computes finite integer support from `ppf(0)` and `ppf(1)`.
+- Prints support, PMF values, and cumulative probabilities.
+- Constructs `RV` once from PMF and once from CDF to illustrate both paths.
+
+Annotated core:
 
 ```python
-from scipy.stats import binom
-from plotcdf.discrete import plot
+rv = binom(n=5, p=0.5)
 
-n = 5
-p = 0.5
-rv = binom(n=n, p=p)
-
+# Finite support bounds for binomial are exact.
 support = range(int(rv.ppf(0)) + 1, int(rv.ppf(1)) + 1)
 prob = rv.pmf(support)
+prob_sum = prob.cumsum()
 
-binomial_rv = plot.RV(support=support, prob=prob)
-
-fig_cdf, ax_cdf = binomial_rv.plot_cdf(rv_name="binomial", save=False)
-fig_pmf, ax_pmf = binomial_rv.plot_pmf(rv_name="binomial", save=False)
-fig_q, ax_q = binomial_rv.plot_quantile(rv_name="binomial", save=False)
+binomial_from_pmf = plot.RV(support=support, prob=prob)
+binomial = plot.RV(support=support, prob=prob_sum, is_pmf=False)
 ```
-
-### Output plots
 
 !!! example "Binomial PMF"
 	![Binomial PMF](assets/examples/binomial_pmf.png)
-	PMF: finite support over integers 0 through 5 for n=5, p=0.5.
 
 !!! example "Binomial CDF"
 	![Binomial CDF](assets/examples/binomial_cdf.png)
-	CDF: monotone staircase with complete left and right tails.
 
 !!! example "Binomial quantile"
 	![Binomial quantile](assets/examples/binomial_quantile.png)
-	Quantile: inverse-step behavior matching the binomial cumulative jumps.
 
-## Poisson example (incomplete tails)
+## `examples/poisson.py`
+
+Goal: document truncated-support workflows for distributions with infinite tails.
+
+Key implementation notes:
+
+- Uses quantile bounds to build finite support windows.
+- Case 1: right-tail truncation only (`complete_right=False`).
+- Case 2: both-tail truncation (`complete_left=False`, `complete_right=False`).
+
+Annotated core:
 
 ```python
-from scipy.stats import poisson
-from plotcdf.discrete import plot
+rv = poisson(mu=3)
 
-mu = 3
-rv = poisson(mu=mu)
+# Right tail truncated: keep mass up to the 95th percentile.
+support, prob, prob_sum = _summarize_support(rv, lower_q=0.0, upper_q=0.95)
+poisson_rv = plot.RV(support=support, prob=prob_sum, is_pmf=False, complete_right=False)
 
-# Incomplete right tail
-support = range(int(rv.ppf(0)) + 1, int(rv.ppf(0.95)) + 1)
-prob = rv.pmf(support)
-poisson_rv = plot.RV(support=support, prob=prob, complete_right=False)
-
-fig_cdf, ax_cdf = poisson_rv.plot_cdf(rv_name="poisson", save=False)
-fig_pmf, ax_pmf = poisson_rv.plot_pmf(rv_name="poisson", save=False)
-fig_q, ax_q = poisson_rv.plot_quantile(rv_name="poisson", save=False)
+# Both tails truncated: drop very low and very high quantiles.
+support, prob, prob_sum = _summarize_support(rv, lower_q=0.25, upper_q=0.995)
+poisson_rv = plot.RV(
+    support=support,
+    prob=prob_sum,
+    is_pmf=False,
+    complete_left=False,
+    complete_right=False,
+)
 ```
-
-If you provide cumulative probabilities instead of PMF values, initialize with `is_pmf=False`.
-
-### Output plots (incomplete right tail)
 
 !!! example "Poisson PMF (incomplete right tail)"
 	![Poisson PMF](assets/examples/poisson_pmf.png)
-	PMF: right tail is truncated, so complete_right=False is used.
 
 !!! example "Poisson CDF (incomplete right tail)"
 	![Poisson CDF](assets/examples/poisson_cdf.png)
-	CDF: right boundary indicates incomplete mass beyond the plotted support.
 
 !!! example "Poisson quantile (incomplete right tail)"
 	![Poisson quantile](assets/examples/poisson_quantile.png)
-	Quantile: upper end reflects truncation of the right tail.
-
-### Output plots (incomplete left and right tails)
 
 !!! example "Poisson PMF (both tails incomplete)"
 	![Poisson PMF truncated both tails](assets/examples/poisson_2_pmf.png)
-	PMF: both left and right tails are truncated (complete_left=False, complete_right=False).
 
 !!! example "Poisson CDF (both tails incomplete)"
 	![Poisson CDF truncated both tails](assets/examples/poisson_2_cdf.png)
-	CDF: both boundary segments indicate missing probability mass outside plotted support.
 
 !!! example "Poisson quantile (both tails incomplete)"
 	![Poisson quantile truncated both tails](assets/examples/poisson_2_quantile.png)
-	Quantile: both lower and upper boundaries reflect incomplete tails.
