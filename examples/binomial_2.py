@@ -37,7 +37,7 @@ def _show_if_interactive() -> None:
 
 def main() -> None:
 	output_folder = _build_output_folder()
-	rv_name = "binomial"
+	rv_name = "binomial_2"
 
 	n = 5
 	p = 0.5
@@ -73,10 +73,10 @@ def main() -> None:
 		label.set_ha("center")
 	# Adjust layout to prevent label cutoff
 	fig_cdf.tight_layout()
-	fig_cdf.savefig(os.path.join(output_folder, f"{rv_name}_2_cdf.png"), dpi=300)
+	fig_cdf.savefig(os.path.join(output_folder, f"{rv_name}_cdf.png"), dpi=300)
 
 	fig_pmf, _ = binomial_from_pmf.plot_pmf(rv_name=rv_name, save=False)
-	fig_pmf.savefig(os.path.join(output_folder, f"{rv_name}_2_pmf.png"), dpi=300)
+	fig_pmf.savefig(os.path.join(output_folder, f"{rv_name}_pmf.png"), dpi=300)
 
 	fig_qt, _ = binomial.plot_quantile(rv_name=rv_name, save=False)
 
@@ -92,7 +92,7 @@ def main() -> None:
 
 	# Adjust layout to prevent label cutoff
 	fig_qt.tight_layout()
-	fig_qt.savefig(os.path.join(output_folder, f"{rv_name}_2_quantile.png"), dpi=300)
+	fig_qt.savefig(os.path.join(output_folder, f"{rv_name}_quantile.png"), dpi=300)
 	
 	_show_if_interactive()
 
